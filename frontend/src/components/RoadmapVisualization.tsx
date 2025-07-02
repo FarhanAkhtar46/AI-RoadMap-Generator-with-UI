@@ -1,16 +1,25 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, BookOpen, GitMerge } from 'lucide-react';
+import { Clock, BookOpen, GitMerge, List } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
 // Define the structure for a single module
 interface Module {
   name: string;
-  time_estimates: string;
+  description?: string;
+  time_estimate: string;
   prerequisites: string;
   dependencies: string[];
-  resources: string[];
+  resources: Resource[];
+}
+
+interface Resource {
+  type?: string;
+  name?: string;
+  platform?: string;
+  author?: string;
+  url?: string;
 }
 
 // Define the props for our component
@@ -45,11 +54,16 @@ export const RoadmapVisualization: React.FC<RoadmapProps> = ({ roadmap }) => {
               <CardTitle className="text-2xl text-gray-800">{index + 1}. {module.name}</CardTitle>
               <Badge variant="secondary" className="flex items-center space-x-2 py-2 px-4">
                 <Clock className="w-4 h-4" />
-                <span>{module.time_estimates}</span>
+                <span>{module.time_estimate}</span>
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="p-6 grid gap-4">
+            {module.description && (
+              <div>
+                <p className="text-gray-700 italic mb-2">{module.description}</p>
+              </div>
+            )}
             {module.prerequisites && (
               <div>
                 <h4 className="font-semibold text-gray-700 mb-2 flex items-center"><GitMerge className="w-5 h-5 mr-2 text-purple-600" />Prerequisites</h4>
@@ -59,11 +73,37 @@ export const RoadmapVisualization: React.FC<RoadmapProps> = ({ roadmap }) => {
             
             {module.resources && module.resources.length > 0 && (
               <div>
-                <h4 className="font-semibold text-gray-700 mb-2 flex items-center"><BookOpen className="w-5 h-5 mr-2 text-blue-600" />Recommended Resources</h4>
+                <h4 className="font-semibold text-gray-700 mb-2 flex items-center">
+                  <BookOpen className="w-5 h-5 mr-2 text-blue-600" />Recommended Resources
+                </h4>
                 <ul className="list-disc list-inside text-gray-600 space-y-1">
-                  {module.resources.map((resource, rIndex) => (
-                    <li key={rIndex}>{resource}</li>
-                  ))}
+                  {module.resources
+                    .filter((resource) => resource && typeof resource === 'object')
+                    .map((resource, rIndex) => (
+                      <li key={rIndex}>
+                        {resource.url ? (
+                          <a
+                            href={resource.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-700 underline hover:text-blue-900"
+                          >
+                            {resource.name || 'Resource'}
+                          </a>
+                        ) : (
+                          <span>{resource.name || 'Resource'}</span>
+                        )}
+                        {resource.type && (
+                          <span className="ml-2 text-xs text-gray-500">({resource.type})</span>
+                        )}
+                        {resource.platform && (
+                          <span className="ml-2 text-xs text-gray-500">[{resource.platform}]</span>
+                        )}
+                        {resource.author && (
+                          <span className="ml-2 text-xs text-gray-500">by {resource.author}</span>
+                        )}
+                      </li>
+                    ))}
                 </ul>
               </div>
             )}
