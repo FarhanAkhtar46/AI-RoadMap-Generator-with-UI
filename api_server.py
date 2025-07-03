@@ -15,7 +15,7 @@ app.mount("/output", StaticFiles(directory="output"), name="output")
 openai_api_key = os.getenv("OPENAI_API_KEY")  # Make sure your key is in your .env or environment
 
 
-
+agent = DynamicLLMConversationAgent(openai_api_key=openai_api_key)
 
 # Allow CORS for local frontend
 app.add_middleware(
@@ -34,7 +34,6 @@ class ConversationInput(BaseModel):
 
 @app.post("/api/conversation")
 async def conversation(input: ConversationInput):
-    agent = DynamicLLMConversationAgent(openai_api_key=openai_api_key)
     result = agent.handle_user_input(input.user_input)
     
     return result
