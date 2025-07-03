@@ -5,10 +5,15 @@ from conversation_agent import RoadmapConversationAgent
 from dynamic_llm_conversation_agent import DynamicLLMConversationAgent
 import os
 from fastapi.staticfiles import StaticFiles
+# Ensure the output directory exists at startup
+os.makedirs("output", exist_ok=True)
 
 app = FastAPI()
+
+app.mount("/output", StaticFiles(directory="output"), name="output")
 # agent = RoadmapConversationAgent()  # Single global agent
 openai_api_key = os.getenv("OPENAI_API_KEY")  # Make sure your key is in your .env or environment
+
 
 agent = DynamicLLMConversationAgent(openai_api_key=openai_api_key)
 
@@ -30,5 +35,5 @@ class ConversationInput(BaseModel):
 @app.post("/api/conversation")
 async def conversation(input: ConversationInput):
     result = agent.handle_user_input(input.user_input)
-    app.mount("/output", StaticFiles(directory="output"), name="output")
+    
     return result
