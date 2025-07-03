@@ -15,7 +15,7 @@ agent = DynamicLLMConversationAgent(openai_api_key=openai_api_key)
 # Allow CORS for local frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict this!
+    allow_origins=["https://polite-river-0cb7dce00.1.azurestaticapps.net"],  # In production, restrict this!
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
