@@ -7,7 +7,7 @@ pydantic>=1.10.0
 jinja2>=3.1.0
 
 # Visualization and utility
-mermaid-js>=10.0.0 # (for reference, actual rendering is in frontend)
+mermaid-js # (for reference, actual rendering is in frontend)
 
 # If you use graphviz for any backend rendering (optional)
 
