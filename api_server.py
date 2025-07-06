@@ -14,8 +14,8 @@ app.mount("/output", StaticFiles(directory="output"), name="output")
 # agent = RoadmapConversationAgent()  # Single global agent
 openai_api_key = os.getenv("OPENAI_API_KEY")  # Make sure your key is in your .env or environment
 
-# Store agents by session_id
-agents = {}
+
+agent = DynamicLLMConversationAgent(openai_api_key=openai_api_key)
 
 # Allow CORS for local frontend
 app.add_middleware(
@@ -31,14 +31,14 @@ app.add_middleware(
 
 class ConversationInput(BaseModel):
     user_input: str
-    session_id: str
 
 @app.post("/api/conversation")
 async def conversation(input: ConversationInput):
-    agent = agents.get(input.session_id)
-    if not agent:
-        agent = DynamicLLMConversationAgent(openai_api_key=openai_api_key)
-        agents[input.session_id] = agent
     result = agent.handle_user_input(input.user_input)
     
     return result
+
+@app.post("/api/reset_conversation")
+async def reset_conversation():
+    agent.history = []
+    return {"status": "reset"}
