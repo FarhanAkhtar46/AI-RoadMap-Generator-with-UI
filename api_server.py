@@ -40,5 +40,9 @@ async def conversation(input: ConversationInput):
 
 @app.post("/api/reset_conversation")
 async def reset_conversation():
-    agent.history = []
+    
+    global agent
+    agent = DynamicLLMConversationAgent(openai_api_key=openai_api_key)
+    
     return {"status": "reset"}
+    
